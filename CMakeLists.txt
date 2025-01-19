@@ -1,84 +1,63 @@
-# This is a copy of <PICO_SDK_PATH>/external/pico_sdk_import.cmake
+# Generated Cmake Pico project file
 
-# This can be dropped into an external project to help locate this SDK
-# It should be include()ed prior to project()
+cmake_minimum_required(VERSION 3.13)
 
-if (DEFINED ENV{PICO_SDK_PATH} AND (NOT PICO_SDK_PATH))
-    set(PICO_SDK_PATH $ENV{PICO_SDK_PATH})
-    message("Using PICO_SDK_PATH from environment ('${PICO_SDK_PATH}')")
-endif ()
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if (DEFINED ENV{PICO_SDK_FETCH_FROM_GIT} AND (NOT PICO_SDK_FETCH_FROM_GIT))
-    set(PICO_SDK_FETCH_FROM_GIT $ENV{PICO_SDK_FETCH_FROM_GIT})
-    message("Using PICO_SDK_FETCH_FROM_GIT from environment ('${PICO_SDK_FETCH_FROM_GIT}')")
-endif ()
+# Initialise pico_sdk from installed location
+# (note this can come from environment, CMake cache etc)
 
-if (DEFINED ENV{PICO_SDK_FETCH_FROM_GIT_PATH} AND (NOT PICO_SDK_FETCH_FROM_GIT_PATH))
-    set(PICO_SDK_FETCH_FROM_GIT_PATH $ENV{PICO_SDK_FETCH_FROM_GIT_PATH})
-    message("Using PICO_SDK_FETCH_FROM_GIT_PATH from environment ('${PICO_SDK_FETCH_FROM_GIT_PATH}')")
-endif ()
-
-if (DEFINED ENV{PICO_SDK_FETCH_FROM_GIT_TAG} AND (NOT PICO_SDK_FETCH_FROM_GIT_TAG))
-    set(PICO_SDK_FETCH_FROM_GIT_TAG $ENV{PICO_SDK_FETCH_FROM_GIT_TAG})
-    message("Using PICO_SDK_FETCH_FROM_GIT_TAG from environment ('${PICO_SDK_FETCH_FROM_GIT_TAG}')")
-endif ()
-
-if (PICO_SDK_FETCH_FROM_GIT AND NOT PICO_SDK_FETCH_FROM_GIT_TAG)
-  set(PICO_SDK_FETCH_FROM_GIT_TAG "master")
-  message("Using master as default value for PICO_SDK_FETCH_FROM_GIT_TAG")
+# == DO NOT EDIT THE FOLLOWING LINES for the Raspberry Pi Pico VS Code Extension to work ==
+if(WIN32)
+    set(USERHOME $ENV{USERPROFILE})
+else()
+    set(USERHOME $ENV{HOME})
 endif()
+set(sdkVersion 2.1.0)
+set(toolchainVersion 13_3_Rel1)
+set(picotoolVersion 2.1.0)
+set(picoVscode ${USERHOME}/.pico-sdk/cmake/pico-vscode.cmake)
+if (EXISTS ${picoVscode})
+    include(${picoVscode})
+endif()
+# ====================================================================================
+set(PICO_BOARD pico_w CACHE STRING "Board type")
 
-set(PICO_SDK_PATH "${PICO_SDK_PATH}" CACHE PATH "Path to the Raspberry Pi Pico SDK")
-set(PICO_SDK_FETCH_FROM_GIT "${PICO_SDK_FETCH_FROM_GIT}" CACHE BOOL "Set to ON to fetch copy of SDK from git if not otherwise locatable")
-set(PICO_SDK_FETCH_FROM_GIT_PATH "${PICO_SDK_FETCH_FROM_GIT_PATH}" CACHE FILEPATH "location to download SDK")
-set(PICO_SDK_FETCH_FROM_GIT_TAG "${PICO_SDK_FETCH_FROM_GIT_TAG}" CACHE FILEPATH "release tag for SDK")
+# Pull in Raspberry Pi Pico SDK (must be before project)
+include(pico_sdk_import.cmake)
 
-if (NOT PICO_SDK_PATH)
-    if (PICO_SDK_FETCH_FROM_GIT)
-        include(FetchContent)
-        set(FETCHCONTENT_BASE_DIR_SAVE ${FETCHCONTENT_BASE_DIR})
-        if (PICO_SDK_FETCH_FROM_GIT_PATH)
-            get_filename_component(FETCHCONTENT_BASE_DIR "${PICO_SDK_FETCH_FROM_GIT_PATH}" REALPATH BASE_DIR "${CMAKE_SOURCE_DIR}")
-        endif ()
-        # GIT_SUBMODULES_RECURSE was added in 3.17
-        if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
-            FetchContent_Declare(
-                    pico_sdk
-                    GIT_REPOSITORY https://github.com/raspberrypi/pico-sdk
-                    GIT_TAG ${PICO_SDK_FETCH_FROM_GIT_TAG}
-                    GIT_SUBMODULES_RECURSE FALSE
-            )
-        else ()
-            FetchContent_Declare(
-                    pico_sdk
-                    GIT_REPOSITORY https://github.com/raspberrypi/pico-sdk
-                    GIT_TAG ${PICO_SDK_FETCH_FROM_GIT_TAG}
-            )
-        endif ()
+project(testeeee C CXX ASM)
 
-        if (NOT pico_sdk)
-            message("Downloading Raspberry Pi Pico SDK")
-            FetchContent_Populate(pico_sdk)
-            set(PICO_SDK_PATH ${pico_sdk_SOURCE_DIR})
-        endif ()
-        set(FETCHCONTENT_BASE_DIR ${FETCHCONTENT_BASE_DIR_SAVE})
-    else ()
-        message(FATAL_ERROR
-                "SDK location was not specified. Please set PICO_SDK_PATH or set PICO_SDK_FETCH_FROM_GIT to on to fetch from git."
-                )
-    endif ()
-endif ()
+# Initialise the Raspberry Pi Pico SDK
+pico_sdk_init()
 
-get_filename_component(PICO_SDK_PATH "${PICO_SDK_PATH}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
-if (NOT EXISTS ${PICO_SDK_PATH})
-    message(FATAL_ERROR "Directory '${PICO_SDK_PATH}' not found")
-endif ()
+# Add executable. Default name is the project name, version 0.1
 
-set(PICO_SDK_INIT_CMAKE_FILE ${PICO_SDK_PATH}/pico_sdk_init.cmake)
-if (NOT EXISTS ${PICO_SDK_INIT_CMAKE_FILE})
-    message(FATAL_ERROR "Directory '${PICO_SDK_PATH}' does not appear to contain the Raspberry Pi Pico SDK")
-endif ()
+add_executable(Keypad-RGB-Buzzer-Simulation Keypad-RGB-Buzzer-Simulation.c )
 
-set(PICO_SDK_PATH ${PICO_SDK_PATH} CACHE PATH "Path to the Raspberry Pi Pico SDK" FORCE)
+pico_set_program_name(Keypad-RGB-Buzzer-Simulation "Keypad-RGB-Buzzer-Simulation")
+pico_set_program_version(Keypad-RGB-Buzzer-Simulation "0.1")
 
-include(${PICO_SDK_INIT_CMAKE_FILE})
+# Modify the below lines to enable/disable output over UART/USB
+pico_enable_stdio_uart(Keypad-RGB-Buzzer-Simulation 1)
+pico_enable_stdio_usb(Keypad-RGB-Buzzer-Simulation 1)
+
+# Add the standard library to the build
+target_link_libraries(Keypad-RGB-Buzzer-Simulation
+        pico_stdlib
+        )
+
+# Add the standard include files to the build
+target_include_directories(Keypad-RGB-Buzzer-Simulation PRIVATE
+  ${CMAKE_CURRENT_LIST_DIR}
+)
+
+# Add any user requested libraries
+target_link_libraries(Keypad-RGB-Buzzer-Simulation 
+        
+        )
+
+pico_add_extra_outputs(Keypad-RGB-Buzzer-Simulation)
+

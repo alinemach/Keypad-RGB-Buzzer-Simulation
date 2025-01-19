@@ -11,10 +11,14 @@
 #define C3 8
 #define C4 9
 
+int rowPins[4] = {L1, L2, L3, L4};    // Pinos GPIO para as linhas
+int colPins[4] = {C1, C2, C3, C4};    // Pinos GPIO para as colunas
+
 // Define os pinos do LED RGB
-#define LED_RED 13
-#define LED_BLUE 12
-#define LED_GREEN 11
+#define LED_RED 11
+#define LED_GREEN 12
+#define LED_BLUE 13
+
 
 // Define o pino do buzzer
 #define BUZZER 21
@@ -30,7 +34,76 @@ char teclas[4][4] = {
     {'*', '0', '#', 'D'}
 };
 
+void init_keypad();
+char read_keypad();
+
 int main() {
+    stdio_init_all();
+    init_keypad();
+
+    while (true) {
+        char caracter = read_keypad();  // Escaneia o teclado matricial
+        if (caracter != '\0') {  // Se uma tecla foi pressionada
+            printf("Tecla pressionada: %c\n", caracter);
+            switch (caracter){
+                case 'A': //Verifica se a tecla pressionada foi a letra A
+                    gpio_put(LED_RED, 1);  // Acende o LED vermelho
+                    break;
+            }
+        } else {
+            gpio_put(LED_RED, 0);  // Desliga o LED
+
+        }
+
+        sleep_ms(200);  // Pausa de 200ms para evitar leituras repetidas
+    }
 
     return 0;
+}
+
+//função para inicializar o teclado matricial
+void init_keypad() {
+    // Configura o pino do LED
+    gpio_init(LED_RED);
+    gpio_set_dir(LED_RED, GPIO_OUT);
+
+    // Configura os pinos das linhas como saída (para enviar sinal)
+    for (int i = 0; i < 4; i++) {
+        gpio_init(rowPins[i]);
+        gpio_set_dir(rowPins[i], GPIO_OUT);
+    }
+
+    // Configura os pinos das colunas como entrada (para ler o sinal)
+    for (int i = 0; i < 4; i++) {
+        gpio_init(colPins[i]);
+        gpio_set_dir(colPins[i], GPIO_IN);
+        gpio_pull_up(colPins[i]); // Configura as colunas com resistor de pull-up
+    }
+}
+
+//função para realizar a varredura do teclado matricial
+char read_keypad() {
+    for (int row = 0; row < 4; row++) {
+        // Desativa todas as linhas antes de ativar a linha atual
+        for (int i = 0; i < 4; i++) {
+            gpio_put(rowPins[i], 1); // Coloca todas as linhas em nível alto
+        }
+
+        // Ativa a linha atual (colocando-a em nível baixo)
+        gpio_put(rowPins[row], 0);
+
+        // Verifica se houve alteração nas colunas
+        for (int col = 0; col < 4; col++) {
+            if (gpio_get(colPins[col]) == 0) {  // Verifica se a tecla foi pressionada
+                // Debounce: espera um pouco para garantir que o botão foi pressionado
+                sleep_ms(50);
+                return teclas[row][col];  // Retorna o valor da tecla pressionada
+            }
+        }
+
+        // Coloca a linha de volta para o nível alto
+        gpio_put(rowPins[row], 1);
+    }
+
+    return '\0'; // Nenhuma tecla foi pressionada
 }
