@@ -1,4 +1,4 @@
-// Padded and checksummed version of: C:/UESC/Cursoembarcados/codigos/Keypad-RGB-Buzzer-Simulation/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin
+// Padded and checksummed version of: /home/aline/Documents/cursos/embarcatech/unidade4/Keypad-RGB-Buzzer-Simulation/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin
 
 .cpu cortex-m0plus
 .thumb
