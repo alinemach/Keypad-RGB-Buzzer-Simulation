@@ -1,5 +1,6 @@
         #include <stdio.h>
         #include "pico/stdlib.h"
+        #include "hardware/pwm.h"
 
         // Define os pinos GPIO para as linhas e para as colunas
         #define L1 2
@@ -40,6 +41,37 @@
         void turn_on_led(uint pin);
         void turn_off_led(uint pin);
 
+        void BUZZER_CONFIG (uint gpio, float frequencia, float duty_cycle){
+    gpio_set_function(gpio, GPIO_FUNC_PWM); //DEFINE O PINO COMO SAÍDA PWM
+    uint slice_num = pwm_gpio_to_slice_num(gpio); //OBTEM O NUMERO DA SLICE ASSOCIADA AO PINO
+    uint channel = pwm_gpio_to_channel(gpio); //OBETEM O NÚMERO DO CANAL
+
+    float clk_div = 4.0f;  // DIVISOR DE CLOCK
+    uint32_t wrap = (uint32_t)((125e6 / (frequencia * clk_div)) - 1);
+   
+    // CONFIGURAÇÃO PWM
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, clk_div);
+    pwm_config_set_wrap(&config, wrap);
+    pwm_init(slice_num, &config, true);
+    
+    // CONFIGURAÇÃO DUTY_CICLE
+     uint32_t level = (uint32_t)(wrap * duty_cycle);
+    pwm_set_chan_level(slice_num, channel, level);
+    pwm_set_enabled(slice_num, true);
+}
+    
+    void CONTROLE_BUZZER(){
+
+    BUZZER_CONFIG(BUZZER, 880.0f, 0.5f); //CONFIGURA FREQUENCIA E DUTY_CYCLE
+        sleep_ms(500);
+        
+        uint slice_num = pwm_gpio_to_slice_num(BUZZER);
+        uint channel = pwm_gpio_to_channel(BUZZER);
+        pwm_set_chan_level(slice_num, channel, 0);  //DESLIGAR BUZZER
+
+}
+
         int main() {
             stdio_init_all();
             init_keypad();
@@ -58,6 +90,9 @@
                         case 'B':
                             turn_on_led(LED_BLUE);
                             turn_off_led(LED_RED);
+                            break;
+                        case '#': //VERIFICA TECLA PRESSIONADA #
+                            CONTROLE_BUZZER();
                             break;
                         default:
                             turn_off_led(LED_RED);  // Desliga o LED se nenhuma tecla relevante for pressionada
