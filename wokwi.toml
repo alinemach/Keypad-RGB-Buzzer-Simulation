@@ -1,3 +1,4 @@
 [wokwi]
 version = 1
 firmware = 'build/Keypad-RGB-Buzzer-Simulation.uf2'
+elf = 'build/Keypad-RGB-Buzzer-Simulation.elf'
