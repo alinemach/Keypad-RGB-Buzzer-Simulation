@@ -28,7 +28,7 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(testeeee C CXX ASM)
+project(Keypad-RGB-Buzzer-Simulation C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
@@ -48,7 +48,6 @@ pico_enable_stdio_usb(Keypad-RGB-Buzzer-Simulation 1)
 target_link_libraries(Keypad-RGB-Buzzer-Simulation
         pico_stdlib
         hardware_pwm
-        stdio.h
         )
 
 # Add the standard include files to the build
