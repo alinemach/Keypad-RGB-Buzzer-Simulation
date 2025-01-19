@@ -15,9 +15,9 @@ int rowPins[4] = {L1, L2, L3, L4};    // Pinos GPIO para as linhas
 int colPins[4] = {C1, C2, C3, C4};    // Pinos GPIO para as colunas
 
 // Define os pinos do LED RGB
-#define LED_RED 11
-#define LED_GREEN 12
-#define LED_BLUE 13
+#define LED_GREEN 11
+#define LED_BLUE 12
+#define LED_RED 13
 
 // Define o pino do buzzer
 #define BUZZER 21
