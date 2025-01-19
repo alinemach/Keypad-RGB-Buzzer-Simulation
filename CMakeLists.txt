@@ -47,6 +47,7 @@ pico_enable_stdio_usb(Keypad-RGB-Buzzer-Simulation 1)
 # Add the standard library to the build
 target_link_libraries(Keypad-RGB-Buzzer-Simulation
         pico_stdlib
+        hardware_pwm
         )
 
 # Add the standard include files to the build
