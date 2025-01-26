@@ -77,6 +77,7 @@
             init_keypad();
             init_led(LED_RED);  // Inicializa o LED vermelho
             init_led(LED_BLUE);
+            init_led(LED_GREEN);
 
             while (true) {
                 char caracter = read_keypad();  // Escaneia o teclado matricial
@@ -86,9 +87,16 @@
                         case 'A':  // Verifica se a tecla pressionada foi a letra A
                             turn_on_led(LED_RED);  // Acende o LED vermelho
                             turn_off_led(LED_BLUE);
+                            turn_off_led(LED_GREEN);
                             break;
                         case 'B':
                             turn_on_led(LED_BLUE);
+                            turn_off_led(LED_RED);
+                            turn_off_led(LED_GREEN);
+                            break;
+                        case 'C':
+                            turn_on_led(LED_GREEN);
+                            turn_off_led(LED_BLUE);
                             turn_off_led(LED_RED);
                             break;
                         case '#': //VERIFICA TECLA PRESSIONADA #
@@ -102,6 +110,7 @@
                 } else {
                     turn_off_led(LED_RED);  // Garante que o LED esteja desligado
                     turn_off_led(LED_BLUE);
+                    turn_off_led(LED_GREEN);
                 }
 
                 sleep_ms(200);  // Pausa de 200ms para evitar leituras repetidas
